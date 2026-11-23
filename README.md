@@ -1,4 +1,8 @@
-# Intel IPU6 Camera Manager — CachyOS Setup
+# Intel IPU6 Camera Manager
+
+This repository has setup steps for CachyOS (Arch) and Ubuntu 26.04. Steps 1–5 are for CachyOS. For Ubuntu, see [Ubuntu 26.04 Setup](#ubuntu-2604-setup).
+
+## CachyOS Setup
 
 ## 1. Install driver, HAL, plugin, loopback (AUR)
 
@@ -57,6 +61,47 @@ chmod +x ipu6-camera.sh
 ```
 
 After `start`, select **`/dev/video50`** (Intel IPU6 Camera) in Slack, Cheese, OBS, Zoom, etc.
+
+## Ubuntu 26.04 Setup
+
+On Ubuntu, the IPU6 kernel modules come from the Ubuntu archive. The camera HAL and the `icamerasrc` plugin come from the Intel IPU6 OEM PPA.
+
+1. Add the PPA and install the packages:
+
+   ```bash
+   sudo add-apt-repository -y ppa:oem-solutions-group/intel-ipu6
+   sudo apt update
+   sudo apt install -y linux-modules-ipu6-generic-hwe-26.04 \
+     gstreamer1.0-icamera libcamhal-ipu6ep libcamhal-ipu6epmtl \
+     v4l2loopback-dkms v4l2loopback-utils gstreamer1.0-tools
+   ```
+
+2. Install the config files, the service, and the manager script:
+
+   ```bash
+   ./install.sh
+   ```
+
+3. Stop `v4l2-relayd` if it is installed. It uses the same camera and loopback device as this service.
+
+   ```bash
+   sudo systemctl disable --now v4l2-relayd
+   ```
+
+4. Reboot. This loads the IPU6 modules and applies the `video` group change.
+
+5. Start the camera and check it:
+
+   ```bash
+   ipu6-camera start
+   ipu6-camera status
+   ```
+
+Notes:
+
+- `libcamhal-ipu6ep` is for Alder Lake and Raptor Lake. `libcamhal-ipu6epmtl` is for Meteor Lake. The command installs both.
+- If you upgraded from Ubuntu 24.04, you can have `linux-modules-ipu6-generic-hwe-24.04` instead. That package also works.
+- If `add-apt-repository` or `apt update` gives `503 Service Unavailable`, Launchpad is down. Wait and run the command again.
 
 ## Troubleshooting
 

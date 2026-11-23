@@ -20,13 +20,13 @@ SYSTEMD_SERVICE="ipu6-camera.service"
 print_msg() {
     local color=$1
     shift
-    echo -e "${color}$@${NC}"
+    echo -e "${color}$*${NC}"
 }
 
-print_success() { print_msg "$GREEN" "✓ $@"; }
-print_error() { print_msg "$RED" "✗ $@"; }
-print_warning() { print_msg "$YELLOW" "⚠ $@"; }
-print_info() { print_msg "$BLUE" "ℹ $@"; }
+print_success() { print_msg "$GREEN" "✓ $*"; }
+print_error() { print_msg "$RED" "✗ $*"; }
+print_warning() { print_msg "$YELLOW" "⚠ $*"; }
+print_info() { print_msg "$BLUE" "ℹ $*"; }
 
 # Check if running as root
 check_root() {
